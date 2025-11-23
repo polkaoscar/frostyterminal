@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrostyTerminal Message Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 
+           Mimic the display of messages/001.html 
+           The input area should look exactly like the <p> content.
+        */
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            /* Prevent body scroll */
+        }
+
+        .container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 2rem;
+            /* Ensure padding for buttons */
+        }
+
+        #messageInput {
+            flex: 1;
+            /* Take all available space */
+            width: 100%;
+            background-color: transparent;
+            border: none;
+            color: var(--text-color);
+            font-family: var(--font-stack);
+            font-size: 24px;
+            line-height: 1.4;
+            outline: none;
+            white-space: pre-wrap;
+            /* Preserve whitespace and wrapping */
+            overflow-y: auto;
+            /* Scroll internally */
+            display: block;
+            margin-bottom: 1rem;
+            min-height: 0;
+            /* Important for flex container to allow scrolling */
+        }
+
+        /* Retro blinking cursor at the end of the input */
+        /* #messageInput::after is now handled by .cursor class in style.css if we add it, 
+           but style.css .cursor::after is for a span. 
+           Let's check style.css again. 
+           style.css: .cursor::after { content: '_'; ... }
+           So if we add class="cursor" to the div, it should work.
+        */
+
+        /* Hide the default caret to rely on our retro cursor */
+        #messageInput {
+            caret-color: transparent;
+        }
+
+        /* 
+           Save button styling:
+           Now handled by .nav-button in style.css
+        */
+
+        /* Ensure nav-buttons container aligns correctly */
+        .nav-buttons {
+            margin-top: 0;
+            /* Remove auto margin since flex handles spacing */
+            padding-top: 0;
+            display: flex;
+            gap: 1rem;
+            flex-shrink: 0;
+            /* Prevent buttons from shrinking */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 
+             Using a div with contenteditable to allow rich-ish text editing 
+             and easier cursor styling than a textarea.
+        -->
+        <div id="messageInput" class="cursor" contenteditable="true" spellcheck="false"></div>
+
+        <div class="nav-buttons">
+            <button id="saveBtn" class="nav-button">SAVE</button>
+        </div>
+    </div>
+
+    <script>
+        const saveBtn = document.getElementById('saveBtn');
+        const messageInput = document.getElementById('messageInput');
+
+        // Auto-focus
+        messageInput.focus();
+
+        saveBtn.addEventListener('click', () => {
+            // Get content. innerText preserves newlines as \n usually, 
+            // but innerHTML might be safer for preserving structure if we wanted rich text.
+            // For this retro terminal, plain text with newlines is best.
+            // innerText in contenteditable usually gives clean text with newlines.
+            const content = messageInput.innerText;
+
+            if (!content.trim()) {
+                alert('Please enter some text.');
+                return;
+            }
+
+            let filename = prompt('Enter filename (e.g. 003.html):', '000.html');
+            if (!filename) return;
+
+            if (!filename.endsWith('.html')) {
+                filename += '.html';
+            }
+
+            const titleId = filename.replace('.html', '');
+
+            // Convert newlines to <br> for HTML display
+            // We also need to escape HTML special chars to prevent injection if we want to be safe,
+            // but for a personal tool, maybe raw HTML is desired? 
+            // The user previously asked for "Message Content (HTML allowed)" in the first iteration.
+            // But with contenteditable div, innerText strips HTML tags.
+            // If they want HTML tags, they should type them. 
+            // If they type "<b>bold</b>", innerText gives "<b>bold</b>". 
+            // So we should probably NOT escape, just replace newlines.
+
+            const formattedContent = content.replace(/\n/g, '<br>\n            ');
+
+            const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message ${titleId}</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <div class="container">
+        <p>
+            ${formattedContent}
+            <span class="cursor"></span>
+        </p>
+
+        <div class="nav-buttons">
+            <a href="../index.html" class="nav-button">&lt;&lt;</a>
+            <a href="#" class="nav-button">&gt;&gt;</a>
+            <a href="../random.html" class="nav-button">?</a>
+        </div>
+    </div>
+</body>
+</html>`;
+
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+
+</html>

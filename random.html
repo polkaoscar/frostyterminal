@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randomizing...</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Hide the fallback content if JS is running */
+        .js-active .fallback {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <br><br><br><br><br><br>
+        <p class="cursor"></p>
+
+        <div class="fallback">
+            <p>Automatic redirection failed (JavaScript required).</p>
+            <p>Select a destination manually:</p>
+            <div class="nav-buttons" style="position: static; margin-top: 1rem;">
+                <a href="messages/001.html" class="nav-button">1</a>
+                <a href="messages/002.html" class="nav-button">2</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mark body as having active JS to hide fallback
+        document.body.classList.add('js-active');
+
+        // List of all message URLs
+        const messages = [
+            'messages/001.html',
+            'messages/002.html'
+        ];
+
+        // Pick a random index
+        const randomIndex = Math.floor(Math.random() * messages.length);
+
+        // Redirect instantly
+        window.location.href = messages[randomIndex];
+    </script>
+</body>
+
+</html>
