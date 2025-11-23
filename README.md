@@ -1,15 +1,13 @@
 # FrostyTerminal
 
-A retro-styled terminal website featuring ASCII art and a unique message viewing interface.
+Imagine stumbling upon an abandoned computer terminal. It might be in a bunker. It could be in a dilapidated shed, deep in the forest. You turn on the computer. What message awaits?
 
 ## Features
-- Retro terminal aesthetic
-- Message viewing system
-- Random message generator
-- Responsive layout
+- Displays short messages
+- Simple navigation & a random button.
 
 ## Structure
-- `index.html`: Main entry point
-- `messages/`: Directory containing message HTML files
-- `style.css`: Main stylesheet
-- `generator.html`: Tool for creating new messages
+- `index.html`: Links to all messages.
+- `messages/`: Contains messages as .html files
+- `style.css`
+- `generator.html`: For making messages, if you don't feel like editing the files yourself.
